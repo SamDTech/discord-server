@@ -6,6 +6,7 @@ import colors from "colors";
 import mongoose from "mongoose";
 import { AuthRouter } from "./routes/authRoute";
 import errorMiddleware from "./middlewares/errorHandler";
+import registerSocketServer from "./socketServer";
 
 dotenv.config();
 colors.enable();
@@ -31,7 +32,7 @@ mongoose
 
 const server = http.createServer(app);
 
-
+registerSocketServer(server);
 // set global error handler
 app.use(errorMiddleware)
 
