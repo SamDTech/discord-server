@@ -43,6 +43,9 @@ export const login = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password, email } = req.body;
 
+    console.log(req.body);
+    
+
     // find the user
     const user = await User.findOne({ email });
 
