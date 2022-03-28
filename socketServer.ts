@@ -1,3 +1,5 @@
+import { verifyTokenSocket } from './middlewares/authSocket';
+import { NextFunction } from "express";
 import http from "http";
 
 const registerSocketServer = (server: http.Server) => {
@@ -7,6 +9,10 @@ const registerSocketServer = (server: http.Server) => {
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     },
+  });
+
+  io.use((socket: any, next: NextFunction) => {
+   verifyTokenSocket(socket, next);
   });
 
   io.on("connection", (socket: any) => {
