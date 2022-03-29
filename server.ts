@@ -36,12 +36,15 @@ mongoose
     console.log(err.red.bold.underline);
   });
 
-// routes
-app.use("/api/auth", AuthRouter);
+
 
 const server = http.createServer(app);
 
 registerSocketServer(server);
+
+
+// routes
+app.use("/api/auth", AuthRouter);
 // set global error handler
 app.use(errorMiddleware);
 

@@ -26,15 +26,19 @@ export const register = asyncHandler(
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ id: newUser._id, email }, process.env.JWT_SECRET!,{
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: newUser._id, email },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "1d",
+      }
+    );
 
     res.status(201).json({
       status: "success",
       username: newUser.username,
       email: newUser.email,
-      token
+      token,
     });
   }
 );
@@ -42,9 +46,6 @@ export const register = asyncHandler(
 export const login = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password, email } = req.body;
-
-    console.log(req.body);
-    
 
     // find the user
     const user = await User.findOne({ email });
@@ -61,13 +62,9 @@ export const login = asyncHandler(
     }
 
     // generate token
-     const token = jwt.sign(
-       { id: user._id, email },
-       process.env.JWT_SECRET!,
-       {
-         expiresIn: "1d",
-       }
-     );
+    const token = jwt.sign({ id: user._id, email }, process.env.JWT_SECRET!, {
+      expiresIn: "1d",
+    });
 
     res.status(200).json({
       status: "success",
