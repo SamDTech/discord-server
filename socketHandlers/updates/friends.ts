@@ -1,7 +1,7 @@
 import { getSocketServerInstance } from "./../../serverStore";
 import asyncHandler from "express-async-handler";
 import FriendInvitation from "../../models/friendInvitationModel";
-import { getOnlineUsers } from "../../serverStore";
+import { getOnlineUser } from "../../serverStore";
 import User from "../../models/userModel";
 
 export const updateFriendsPendingInvitation = async (userId: string) => {
@@ -11,7 +11,7 @@ export const updateFriendsPendingInvitation = async (userId: string) => {
     }).populate("senderId", "username email");
 
     // find if user is logged in
-    const onlineUsers = getOnlineUsers(userId);
+    const onlineUsers = getOnlineUser(userId);
 
     // emit the events to other users
     const io = getSocketServerInstance();
@@ -29,7 +29,7 @@ export const updateFriendsPendingInvitation = async (userId: string) => {
 export const updateFriends = async (userId: string) => {
   try {
     // find if user is logged in
-    const onlineUsers = getOnlineUsers(userId);
+    const onlineUsers = getOnlineUser(userId);
 
     if(onlineUsers.length > 0) {
          const user = await User.findById(userId, { friends: 1 }).populate(
@@ -39,7 +39,7 @@ export const updateFriends = async (userId: string) => {
 
          const friendList = user.friends.map((friend: any) => {
            return {
-             id: friend._id,
+             _id: friend._id,
              username: friend.username,
              email: friend.email,
            };

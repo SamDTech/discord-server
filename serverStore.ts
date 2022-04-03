@@ -25,13 +25,22 @@ export const removeConnectedUser = (socketId: string) => {
   }
 };
 
-export const getOnlineUsers = (userId: string) => {
+export const getOnlineUser = (userId: string) => {
   const onlineUsers: any = [];
 
   connectedUsers.forEach((user, key) => {
     if (user.userId === userId) {
       onlineUsers.push(key);
     }
+  });
+
+  return onlineUsers;
+};
+
+export const getCurrentOnlineUsers = () => {
+  const onlineUsers: any = [];
+  connectedUsers.forEach((user, key) => {
+    onlineUsers.push({ socketId: key, userId: user.userId });
   });
 
   return onlineUsers;

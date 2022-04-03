@@ -3,7 +3,7 @@ import { NextFunction } from "express";
 import http from "http";
 import { newConnectionHandler } from "./socketHandlers/newConnectionHandler";
 import { disconnetHander } from "./socketHandlers/disconnectHandler";
-import { setSocketServerInstance } from "./serverStore";
+import { getCurrentOnlineUsers, setSocketServerInstance } from "./serverStore";
 
 const registerSocketServer = (server: http.Server) => {
   const io = require("socket.io")(server, {
@@ -23,17 +23,28 @@ const registerSocketServer = (server: http.Server) => {
     verifyTokenSocket(socket, next);
   });
 
+  // emit online Users
+  const emitOnlineUsers = () => {
+    io.emit("onlineUsers", {
+      onlineUsers: getCurrentOnlineUsers(),
+    });
+  };
+
   io.on("connection", (socket: any) => {
     console.log("User connected");
     console.log(socket.id);
 
     newConnectionHandler(socket, io);
+    // emit online users
+    emitOnlineUsers();
 
     socket.on("disconnect", () => {
       console.log("User disconnected");
       disconnetHander(socket);
     });
   });
+
+  setInterval(emitOnlineUsers, 8000);
 };
 
 export default registerSocketServer;
