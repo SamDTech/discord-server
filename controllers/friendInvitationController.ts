@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import FriendInvitation from "../models/friendInvitationModel";
 import User from "../models/userModel";
-import { updateFriendsPendingInvitation } from "../socketHandlers/updates/friends";
+import { updateFriends, updateFriendsPendingInvitation } from "../socketHandlers/updates/friends";
 import AppError from "../utils/appError";
 
 export const postInvite = asyncHandler(
@@ -106,8 +106,12 @@ export const inviteAccept = asyncHandler(
     // delete invitation
     await FriendInvitation.findByIdAndDelete(id);
 
+    // update friends list
+    updateFriends(senderId.toString());
+    updateFriends(receiverId.toString());
+
     // send pending invitation to specific users
-    updateFriendsPendingInvitation(user._id.toString());
+    updateFriendsPendingInvitation(receiverId.toString());
 
     res.status(200).send("Friend Successfully added!");
   }
