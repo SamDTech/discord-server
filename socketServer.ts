@@ -3,6 +3,7 @@ import { NextFunction } from "express";
 import http from "http";
 import { newConnectionHandler } from "./socketHandlers/newConnectionHandler";
 import { disconnetHander } from "./socketHandlers/disconnectHandler";
+import { setSocketServerInstance } from "./serverStore";
 
 const registerSocketServer = (server: http.Server) => {
   const io = require("socket.io")(server, {
@@ -13,6 +14,9 @@ const registerSocketServer = (server: http.Server) => {
       credentials: true,
     },
   });
+
+  // set socket server instance
+  setSocketServerInstance(io);
 
   // middleware to verify token
   io.use((socket: any, next: NextFunction) => {

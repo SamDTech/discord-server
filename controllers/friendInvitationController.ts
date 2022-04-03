@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import FriendInvitation from "../models/friendInvitationModel";
 import User from "../models/userModel";
+import { updateFriendsPendingInvitation } from "../socketHandlers/updates/friends";
 import AppError from "../utils/appError";
 
 export const postInvite = asyncHandler(
@@ -57,6 +58,9 @@ export const postInvite = asyncHandler(
       senderId: user._id,
       receiverId: targetFriend._id,
     });
+
+    // send pending invitation to specific users
+    updateFriendsPendingInvitation(targetFriend._id.toString());
 
     res.status(201).send("Invitation sent");
   }
