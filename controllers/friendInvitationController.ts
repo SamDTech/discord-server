@@ -68,12 +68,48 @@ export const postInvite = asyncHandler(
 
 export const inviteAccept = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email } = req.body;
+    const { id } = req.body;
 
     // get logged in user
     const user = req.user!;
 
-    res.send("Invitation accepted");
+    const invitation = await FriendInvitation.findById(id);
+
+    if (!invitation) {
+      return next(new AppError(404, "Error Occured, Please try again!"));
+    }
+
+    const { senderId, receiverId } = invitation;
+
+    // add user to friends list
+    await User.findByIdAndUpdate(
+      senderId,
+      {
+        $push: {
+          friends: receiverId,
+        },
+      },
+      { new: true }
+    );
+
+    // add friend to user's friends list
+    await User.findByIdAndUpdate(
+      receiverId,
+      {
+        $push: {
+          friends: senderId,
+        },
+      },
+      { new: true }
+    );
+
+    // delete invitation
+    await FriendInvitation.findByIdAndDelete(id);
+
+    // send pending invitation to specific users
+    updateFriendsPendingInvitation(user._id.toString());
+
+    res.status(200).send("Friend Successfully added!");
   }
 );
 
@@ -97,7 +133,6 @@ export const inviteReject = asyncHandler(
 
     // update pending invitations
     updateFriendsPendingInvitation(user._id.toString());
-
 
     res.status(200).send("Invitation Successfully Rejected!");
   }
