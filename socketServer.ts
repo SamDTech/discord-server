@@ -7,9 +7,10 @@ import { disconnetHander } from "./socketHandlers/disconnectHandler";
 const registerSocketServer = (server: http.Server) => {
   const io = require("socket.io")(server, {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true,
     },
   });
 

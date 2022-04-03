@@ -8,9 +8,16 @@ import mongoose from "mongoose";
 import { AuthRouter } from "./routes/authRoute";
 import errorMiddleware from "./middlewares/errorHandler";
 import registerSocketServer from "./socketServer";
+import { FriendInvitationRouter } from "./routes/friendInvitationRoute";
 
 dotenv.config();
 colors.enable();
+
+const allowedOrigins = ["http://localhost:3000", "http://localhost:5000"];
+const options: cors.CorsOptions = {
+  credentials: true,
+  origin: allowedOrigins,
+};
 
 const PORT = process.env.PORT || 5000;
 
@@ -18,12 +25,7 @@ const app = express();
 
 app.use(express.json());
 app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-    credentials: true,
-  })
+  cors(options),
 );
 app.use(morgan("dev"));
 
@@ -36,15 +38,13 @@ mongoose
     console.log(err.red.bold.underline);
   });
 
-
-
 const server = http.createServer(app);
 
 registerSocketServer(server);
 
-
 // routes
 app.use("/api/auth", AuthRouter);
+app.use("/api/friendInvitation", FriendInvitationRouter);
 // set global error handler
 app.use(errorMiddleware);
 
