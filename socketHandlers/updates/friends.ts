@@ -5,7 +5,7 @@ import { getOnlineUsers } from "../../serverStore";
 
 export const updateFriendsPendingInvitation = async (userId: string) => {
   try {
-    const pendingInvitation = await FriendInvitation.find({
+    const pendingInvitations = await FriendInvitation.find({
       receiverId: userId,
     }).populate("senderId", "username email");
 
@@ -17,7 +17,7 @@ export const updateFriendsPendingInvitation = async (userId: string) => {
 
     onlineUsers.forEach((socketId: string) => {
       io.to(socketId).emit("friendsInvitations", {
-        pendingInvitation: pendingInvitation ? pendingInvitation : [],
+        pendingInvitations: pendingInvitations ? pendingInvitations : [],
       });
     });
   } catch (error) {
