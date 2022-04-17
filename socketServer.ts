@@ -41,7 +41,7 @@ const registerSocketServer = (server: http.Server) => {
 
     socket.on(
       "directMessage",
-      (data: { receiverUserId: string; message: string }) => {
+      (data: { receiverUserId: string; content: string }) => {
         directMessageHandler(socket, data);
       }
     );

@@ -1,17 +1,17 @@
 import Conversation from "../models/ConversationModel";
 import Message from "../models/messageModel";
+import { updateChatHistory } from "./updates/chat";
 
 export const directMessageHandler = async (socket: any, data: any) => {
   try {
-    console.log(socket);
-    const { userId } = socket;
+    const { user } = socket;
 
-    const { receiverUserId, message } = data;
+    const { receiverUserId, content } = data;
 
     // create a new message
     const newMessage = await Message.create({
-      content: message,
-      authorId: userId,
+      content: content,
+      authorId: user.id,
       date: new Date(),
       type: "DIRECT",
     });
@@ -19,23 +19,20 @@ export const directMessageHandler = async (socket: any, data: any) => {
     // find if conversation exist between this two users, if not, create a new conversation
     const conversation = await Conversation.findOne({
       participants: {
-        $all: [userId, receiverUserId],
+        $all: [user.id, receiverUserId],
       },
     });
     if (!conversation) {
       const newConversation = await Conversation.create({
-        participants: [userId, receiverUserId],
+        participants: [user.id, receiverUserId],
         messages: [newMessage._id],
       });
 
       // perform and update sender and receiver if online
-      socket.emit("directMessage", {
-        conversationId: newConversation._id,
-        message: newMessage,
-      });
+      updateChatHistory(newConversation._id);
 
       return;
-    }else{
+    } else {
       // if conversation exist, add the new message to the conversation
       await Conversation.updateOne(
         { _id: conversation._id },
@@ -43,10 +40,7 @@ export const directMessageHandler = async (socket: any, data: any) => {
       );
 
       // perform and update sender and receiver if online
-      socket.emit("directMessage", {
-        conversationId: conversation._id,
-        message: newMessage,
-      });
+      updateChatHistory(conversation._id);
     }
   } catch (error) {}
 };
