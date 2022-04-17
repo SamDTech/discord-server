@@ -39,9 +39,12 @@ const registerSocketServer = (server: http.Server) => {
     // emit online users
     emitOnlineUsers();
 
-    socket.on("directMessage", (data: any) => {
-      directMessageHandler(socket, data);
-    });
+    socket.on(
+      "directMessage",
+      (data: { receiverUserId: string; message: string }) => {
+        directMessageHandler(socket, data);
+      }
+    );
 
     socket.on("disconnect", () => {
       console.log("User disconnected");
