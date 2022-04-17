@@ -5,6 +5,7 @@ import { newConnectionHandler } from "./socketHandlers/newConnectionHandler";
 import { disconnetHander } from "./socketHandlers/disconnectHandler";
 import { getCurrentOnlineUsers, setSocketServerInstance } from "./serverStore";
 import { directMessageHandler } from "./socketHandlers/directMessage";
+import { directChatHistoryHandler } from "./socketHandlers/directChatHistoryHandler";
 
 const registerSocketServer = (server: http.Server) => {
   const io = require("socket.io")(server, {
@@ -45,6 +46,11 @@ const registerSocketServer = (server: http.Server) => {
         directMessageHandler(socket, data);
       }
     );
+
+    socket.on("directChatHistory", (data: { receiverUserId: string }) => {
+      directChatHistoryHandler(socket, data);
+
+    });
 
     socket.on("disconnect", () => {
       console.log("User disconnected");
