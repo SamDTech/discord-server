@@ -4,6 +4,7 @@ import http from "http";
 import { newConnectionHandler } from "./socketHandlers/newConnectionHandler";
 import { disconnetHander } from "./socketHandlers/disconnectHandler";
 import { getCurrentOnlineUsers, setSocketServerInstance } from "./serverStore";
+import { directMessageHandler } from "./socketHandlers/directMessage";
 
 const registerSocketServer = (server: http.Server) => {
   const io = require("socket.io")(server, {
@@ -37,6 +38,10 @@ const registerSocketServer = (server: http.Server) => {
     newConnectionHandler(socket, io);
     // emit online users
     emitOnlineUsers();
+
+    socket.on("directMessage", (data: any) => {
+      directMessageHandler(socket, data);
+    });
 
     socket.on("disconnect", () => {
       console.log("User disconnected");
