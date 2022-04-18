@@ -29,7 +29,7 @@ export const directMessageHandler = async (socket: any, data: any) => {
       });
 
       // perform and update sender and receiver if online
-      updateChatHistory(newConversation._id);
+      updateChatHistory(newConversation._id.toString());
 
       return;
     } else {
@@ -40,7 +40,7 @@ export const directMessageHandler = async (socket: any, data: any) => {
       );
 
       // perform and update sender and receiver if online
-      updateChatHistory(conversation._id);
+      updateChatHistory(conversation._id.toString());
     }
   } catch (error) {}
 };

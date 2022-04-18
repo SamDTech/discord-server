@@ -68,6 +68,7 @@ export const login = asyncHandler(
 
     res.status(200).json({
       status: "success",
+      _id: user._id,
       username: user.username,
       email: user.email,
       token,
